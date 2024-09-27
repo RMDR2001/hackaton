@@ -1,13 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Skills</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Trade Skills</title>
 </head>
+
 <body>
-    <!-- Usar Javascript para recuperar el ID del user que viene en los parámetros -->
-    <!-- Luego hacer un fetch para obtener a todo el usuario y guardarlo en el State -->
-     <!-- Luego hacer un redirect hacia /index.html -->
+	<!-- Usar Javascript para recuperar el ID del user que viene en los parámetros -->
+	<h1>Verificando...</h1>
+	<script>
+		const LS_KEY = "trade.skills";
+		function updateUserInState(newUser) {
+			const newState = { user: newUser };
+			localStorage.setItem(LS_KEY, JSON.stringify(newState));
+			console.log("Estado actualizado:", newState);
+		}
+
+		function getUserIdFromUrl() {
+			const urlParams = new URLSearchParams(window.location.search); return urlParams.get('id');
+		}
+
+		async function handleAuth() {
+			const userId = getUserIdFromUrl();
+			if (!userId) {
+				console.error("No se encontró el ID del usuario en la URL.");
+				return;
+			} try {
+				const response = await fetch(`http://localhost:3000/user/${userId}`);
+				if (!response.ok) {
+					throw new Error(`Error en la red: ${response.statusText}`);
+				} const userData = await response.json();
+				updateUserInState(userData);
+				window.location.href = 'index.html';
+			} catch (error) {
+				console.error("Error al recuperar los datos del usuario:", error);
+			}
+		}
+
+		handleAuth();
+	</script>
+	<!-- Luego hacer un fetch para obtener a todo el usuario y guardarlo en el State -->
+	<!-- Luego hacer un redirect hacia /index.html -->
 </body>
+
 </html>
