@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { connectDB, disconnectDB } = require("./db");
+const User = require("/Model/user");
 
 const PORT = process.env.PORT;
 
@@ -15,31 +16,63 @@ app.use(express.json());
 connectDB();
 
 app.post("/user", async (request, response) => {
-	// TODO: Si el correo no existe, crear un nuevo usuario en la DB (Mongo) y devolver el ID.
-	// TODO: Si existe solamente devolver el ID
-	// TODO: Redireccionar al frontend con el token en la URL (no es lo más seguro, pero es un ejemplo)
-	response.redirect("http://localhost:5500/auth?id=");
+  try {
+    const { email, phone, fullName, skills } = request.body;
+    let user = await User.findOne({ email });
+    if (user) {
+      return response.redirect("http://localhost:5500/auth?id=${user._id}");
+    }
+    user = new User({ email, phone, fullName, skills });
+    await user.save();
+    response.redirect("http://localhost:5500/auth?id=${user._id}");
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
 });
 
 app.post("/skill", async (request, response) => {
-	// TODO: Agregar una habilidad a tu propio usuario en la DB (Mongo)
-	response.json({ message: "Nuevo skill agregado." });
+  try {
+    const { email, skills } = request.body;
+    let user = await User.findOne({ email });
+    if (!user) {
+      return response.status(404).json({ message: "Usuario no encontrado" });
+    }
+    user.skills.push(skills);
+    await user.save();
+    response.json({ message: "Hábilidad guardada", user });
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+  response.json({ message: "Nuevo skill agregado." });
 });
 
 app.get("/user", async (request, response) => {
-	// TODO: Obtener tu información de usuario (incluyendo skills) de la DB (Mongo)
-	response.json({ message: "Este es tu usuario." });
+  // TODO: Obtener tu información de usuario (incluyendo skills) de la DB (Mongo)
+  try {
+    const { email } = request.query;
+    let user = await User.findOne({ email });
+    if (!user) {
+      return response.status(404).json({ message: "Usuario no encontrado" });
+    }
+    response.json({ user });
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
 });
 
 app.get("/users", async (request, response) => {
-	// TODO: Obtener la información de todos los usuarios (incluyendo skills) de la DB (Mongo)
-	response.json({ data: [], message: "Usuarios y skills." });
+  try {
+    const users = await User.find();
+    response.json({ data: [], message: "Usuarios y skills." });
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
 });
 
 app.listen(PORT, () => console.log("Listening on PORT", PORT));
 
 // Desconectar cuando la app se cierre (por ejemplo, en casos de interrupción)
 process.on("SIGINT", async () => {
-	await disconnectDB();
-	process.exit(0);
+  await disconnectDB();
+  process.exit(0);
 });
