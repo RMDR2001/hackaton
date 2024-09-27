@@ -12,23 +12,15 @@ const userSkills = new mongoose.Schema({
   },
 });
 
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
+const userSchema = new mongoose.Schema(
+  {
+    email: { type: String, require: true },
+    phone: { type: String, require: true },
+    fullname: { type: String, require: true },
+    skills: [userSkills],
   },
-  phone: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  fullName: {
-    type: String,
-    required: true,
-  },
-  skills: [userSkills],
-});
+  { collection: "user_skills" }
+);
 
 const User = mongoose.model("User", userSchema);
 

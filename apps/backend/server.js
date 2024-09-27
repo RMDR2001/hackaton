@@ -17,12 +17,12 @@ connectDB();
 
 app.post("/user", async (request, response) => {
   try {
-    const { email, phone, fullName, skills } = request.body;
+    const { email, phone, fullname, skills } = request.body;
     let user = await User.findOne({ email });
     if (user) {
       return response.redirect("http://localhost:5500/auth?id=${user._id}");
     }
-    user = new User({ email, phone, fullName, skills });
+    user = new User({ email, phone, fullname, skills });
     await user.save();
     response.redirect("http://localhost:5500/auth?id=${user._id}");
   } catch (error) {
@@ -63,7 +63,7 @@ app.get("/user", async (request, response) => {
 app.get("/users", async (request, response) => {
   try {
     const users = await User.find();
-    response.json({ data: [], message: "Usuarios y skills." });
+    response.json({ data: users, message: "Usuarios y skills." });
   } catch (error) {
     response.status(500).json({ error: error.message });
   }
