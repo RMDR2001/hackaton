@@ -1,0 +1,20 @@
+.header-body {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 300px;
+  margin-right: 300px;
+  padding: 50px;
+}
+
+.footer-end {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 500px;
+  margin-right: 500px;
+  padding: 20px;
+}
+
+.user-body {
+  display: flex;
+  justify-content: center;
+}
