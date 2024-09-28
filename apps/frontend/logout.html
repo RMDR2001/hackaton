@@ -7,5 +7,19 @@
 </head>
 <body>
     <!-- Usar Javascript para eliminar el state y redirigir a /index.html -->
+     <h1>Salir de Trade Skills</h1>
+     <p>Has cerrado sesión correctamente. Redirigiendo...</p>
+
+     <script>
+        const LS_KEY = "trade.skills";
+
+        function logout() {
+            localStorage.removeItem(LS_KEY);
+
+            window.location.href = "/index.html";
+        }
+
+        window.onload = logout;
+     </script>
 </body>
 </html>
